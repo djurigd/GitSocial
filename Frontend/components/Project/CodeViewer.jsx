@@ -13,7 +13,6 @@ function CodeViewer({ file }) {
 
          <div className="code-header">
             <span>{file.filename}</span>
-            <span>{file.language}</span>
          </div>
 
          <pre className="code-content">

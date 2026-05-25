@@ -7,79 +7,43 @@ function CommentSection({ postId }) {
    const [comments, setComments] = useState([])
    const [content, setContent] = useState("")
 
-   async function fetchComments() {
-
-      const response = await fetch(
-         `http://localhost:3000/api/comments/post/${postId}`
-      )
-
-      const data = await response.json()
-
-      setComments(data)
-   }
-
-   async function submitComment() {
-
-      if (!content.trim()) {
-         return
-      }
-
-      await fetch(
-         "http://localhost:3000/api/comments",
-         {
-            method: "POST",
-            headers: {
-               "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-               post_id: postId,
-               user_id: 1,
-               content
-            })
-         }
-      )
-
-      setContent("")
-
-      fetchComments()
-   }
-
    useEffect(() => {
-      fetchComments()
+      // Mock comments for testing
+      const mockComments = [
+         { id: 1, user_id: 1, content: "This project is awesome!" },
+         { id: 2, user_id: 2, content: "Really clean React structure." }
+      ]
+
+      setComments(mockComments)
    }, [postId])
+
+   function submitComment() {
+      if (!content.trim()) return
+
+      const newComment = { id: Date.now(), user_id: 1, content }
+      setComments(prev => [...prev, newComment])
+      setContent("")
+   }
 
    return (
       <div className="comment-section">
-
          <h2>Comments</h2>
 
          <div className="comment-input">
-
             <textarea
                value={content}
-               onChange={(e) =>
-                  setContent(e.target.value)
-               }
+               onChange={(e) => setContent(e.target.value)}
                placeholder="Write a comment..."
             />
 
-            <button onClick={submitComment}>
-               Send
-            </button>
-
+            <button onClick={submitComment}>Send</button>
          </div>
 
          <div className="comment-list">
-
             {comments.map(comment => (
-               <CommentCard
-                  key={comment.id}
-                  comment={comment}
-               />
+               <CommentCard key={comment.id} comment={comment} />
             ))}
-
          </div>
-
       </div>
    )
 }

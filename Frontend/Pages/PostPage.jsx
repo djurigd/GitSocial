@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 
-import FileExplorer from "../components/project/FileExplorer"
-import CodeViewer from "../components/project/CodeViewer"
-import CommentSection from "../components/comments/CommentSection"
+import FileExplorer from "../components/Project/FileExplorer"
+import CodeViewer from "../components/Project/CodeViewer"
+import CommentSection from "../components/Comments/CommentSection"
+import Header from "../components/HeaderBar"
 
 function PostPage() {
 
@@ -14,40 +15,61 @@ function PostPage() {
    const [selectedFile, setSelectedFile] = useState(null)
 
    useEffect(() => {
-
-      async function fetchPost() {
-
-         const postRes = await fetch(
-            `http://localhost:3000/api/posts/${id}` //placeholder
-         )
-
-         const postData = await postRes.json()
-
-         setPost(postData)
-
-         const filesRes = await fetch(
-            `http://localhost:3000/api/files/post/${id}`//placeholder
-         )
-
-         const filesData = await filesRes.json()
-
-         setFiles(filesData)
-
-         if (filesData.length > 0) {
-            setSelectedFile(filesData[0])
-         }
+      // Mock post + files data for local testing
+      const mockPost = {
+         id: 1,
+         title: "Test post",
+         description: "This is the description of the test post. It can be a project, an article, or anything else you want to share with the community."
       }
 
-      fetchPost()
+      const mockFiles = [
+         {
+            id: 1,
+            filename: "App.jsx",
+            language: "javascript",
+            content: `function App() {
+   return (
+      <h1>Hello World</h1>
+   )
+}
+export default App`
+         },
+
+         {
+            id: 2,
+            filename: "styles.css",
+            language: "css",
+            content: `body {
+   background-color: black;
+   color: white;
+}`
+         },
+
+         {
+            id: 3,
+            filename: "server.js",
+            language: "javascript",
+            content: `const express = require('express')
+
+const app = express()
+
+app.listen(3000)`
+         }
+      ]
+
+      setPost(mockPost)
+      setFiles(mockFiles)
+      setSelectedFile(mockFiles[0])
 
    }, [id])
 
    if (!post) {
       return <div>Loading...</div>
    }
-
    return (
       <div className="post-page">
+
+         <Header />
 
          <div className="project-header">
             <h1>{post.title}</h1>
