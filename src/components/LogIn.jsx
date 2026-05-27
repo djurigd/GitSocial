@@ -1,42 +1,44 @@
 import { useState, useEffect } from 'react';
+import {createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  'https://wqasdhamgcvwwlfkafmn.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxYXNkaGFtZ2N2d3dsZmthZm1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjUxNDUsImV4cCI6MjA5Mzg0MTE0NX0.ogfW-38A8Hy1Y_GowHRaNCn8MyHmgU1mPyB13EqeEYU'
+)
 
 export function LogIn() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get("code");
-
   const [userData, setUserData] = useState(undefined);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     async function handleAuth() {
-      if (token) {
-        const response = fetch('https://api.github.com/user', {
-          headers: { Authorization: token },
-        });
-        const data = response.json();
-        setUserData(data);
-
-      } else if (code) {
-        const response = fetch(`http://localhost:3000/oauth/redirect?code=${code}&state=test_state`);
-        const data = response.json();
-        setUserData(data.userData);
-        localStorage.setItem("token", `${data.tokenType} ${data.token}`);
-      }
+      const { data: { user }} = await supabase.auth.getUser();
+      setUserData(user);
     }
 
     handleAuth();
-  }, [code]);
 
-  function githubAuth(){
-    const redirect_uri = 'http://localhost:3000/test';
-    const scope = 'read:user';
+    const { data: { subscription }} = supabase.auth.onAuthStateChange((event, session) => {
+      setUserData(session?.user ?? null);
+    });
 
-    const url = `https://github.com/login/oauth/authorize?client_id=${import.meta.env.VITE_CLIENT_ID}&redirect_uri=${redirect_uri}&scope=${scope}`;
-  
-    window.location.href = url;
+    return () => subscription.unsubscribe();
+  });
+
+  async function githubAuth(){
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: window.location.origin
+      }
+    });
+
+    if (error) {
+      console.error(`Login Error: ${error.message}`);
+    }
   }
 
   if (userData) {
+    console.log(`User Data: ${userData}`);
     console.log("User authenticated");
   }
 
