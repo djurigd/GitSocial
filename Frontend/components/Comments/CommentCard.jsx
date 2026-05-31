@@ -1,10 +1,11 @@
 function CommentCard({ comment }) {
-
    return (
       <div className="comment-card">
 
          <div className="comment-header">
-            <strong>User {comment.user_id}</strong>
+            <strong>
+               {comment.users?.username || "Unknown User"}
+            </strong>
          </div>
 
          <div className="comment-content">
