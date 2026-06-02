@@ -7,7 +7,6 @@ import {
   Col,
   Container,
   Form,
-  InputGroup,
   Navbar,
   Row,
   Badge,
@@ -45,7 +44,7 @@ function formatPostTime(createdAt) {
   return postedAt.toLocaleDateString()
 }
 
-function PostCard({ post, onTagClick }) {
+function PostCard({ post }) {
   const navigate = useNavigate()
 
   function openPost() {
@@ -57,11 +56,6 @@ function PostCard({ post, onTagClick }) {
       event.preventDefault()
       openPost()
     }
-  }
-
-  function handleTagClick(event, tag) {
-    event.stopPropagation()
-    onTagClick(tag)
   }
 
   return (
@@ -105,7 +99,7 @@ function PostCard({ post, onTagClick }) {
       <ul className="post-tag list-unstyled d-flex flex-wrap gap-2 mb-3">
         {post.tags.map((tag) => (
           <li key={tag}>
-            <Badge bg={null} onClick={(event) => handleTagClick(event, tag)}>
+            <Badge bg={null}>
               #{tag}
             </Badge>
           </li>
@@ -122,10 +116,58 @@ function PostCard({ post, onTagClick }) {
   )
 }
 
+function UserSearchCard({ user }) {
+  const navigate = useNavigate()
+  const profileSummary = user.bio || user.github_username || 'GitSocial user'
+  const previewSummary =
+    profileSummary.length > 80 ? `${profileSummary.slice(0, 77)}...` : profileSummary
+
+  function openProfile() {
+    navigate(`/profile/${user.id}`)
+  }
+
+  function handleKeyDown(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      openProfile()
+    }
+  }
+
+  return (
+    <Card
+      className="user-search-card"
+      role="button"
+      tabIndex={0}
+      onClick={openProfile}
+      onKeyDown={handleKeyDown}
+    >
+      <Card.Body className="d-flex align-items-center p-3">
+        {user.avatar_url ? (
+          <img
+            src={user.avatar_url}
+            className="profile-avatar me-3"
+            alt=""
+          />
+        ) : (
+          <div className="profile-avatar me-3" aria-hidden="true">
+            {user.username?.charAt(0).toUpperCase() ?? 'U'}
+          </div>
+        )}
+        <div>
+          <div className="fw-bold text-dark">{user.username ?? 'Unknown user'}</div>
+          <div className="user-search-summary text-muted small">{previewSummary}</div>
+        </div>
+      </Card.Body>
+    </Card>
+  )
+}
+
 function HomePage() {
   const [searchTerm, setSearchTerm] = useState('')
-  const [searchMode, setSearchMode] = useState('users')
-  const [submittedSearch, setSubmittedSearch] = useState({ mode: 'users', term: '' })
+  const [submittedSearch, setSubmittedSearch] = useState('')
+  const [userResults, setUserResults] = useState([])
+  const [searchLoading, setSearchLoading] = useState(false)
+  const [searchErrorMessage, setSearchErrorMessage] = useState('')
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
@@ -142,19 +184,12 @@ function HomePage() {
         setLoading(true)
         setErrorMessage('')
 
-        const searchingUsers = submittedSearch.mode === 'users' && submittedSearch.term
-        const searchingTags = submittedSearch.mode === 'tags' && submittedSearch.term
-        const userRelation = searchingUsers ? 'users!inner' : 'users'
-        const matchingTagsSelection = searchingTags
-          ? ', matching_post_tags:post_tags!inner ( tags!inner ( name ) )'
-          : ''
-
         let query = supabase.from('posts').select(`
             id,
             title,
             description,
             created_at,
-            ${userRelation} (
+            users (
               username,
               avatar_url
             ),
@@ -171,25 +206,9 @@ function HomePage() {
                 name
               )
             )
-            ${matchingTagsSelection}
           `)
           .eq('visibility', 'public')
           .order('created_at', { ascending: false })
-
-        if (searchingUsers) {
-          query = query.ilike('users.username', `%${submittedSearch.term.trim()}%`)
-        }
-
-        if (searchingTags) {
-          const tags = submittedSearch.term
-            .split(/\s+/)
-            .map((tag) => tag.replace(/^#/, '').trim())
-            .filter(Boolean)
-
-          if (tags.length > 0) {
-            query = query.in('matching_post_tags.tags.name', tags)
-          }
-        }
 
         const { data, error } = await query
 
@@ -222,32 +241,50 @@ function HomePage() {
     }
 
     loadFeedPosts()
+  }, [])
+
+  useEffect(() => {
+    async function loadUserResults() {
+      if (!submittedSearch) {
+        setUserResults([])
+        setSearchErrorMessage('')
+        return
+      }
+
+      if (!isSupabaseConfigured) {
+        setSearchErrorMessage('Add your Supabase environment variables to search users.')
+        return
+      }
+
+      try {
+        setSearchLoading(true)
+        setSearchErrorMessage('')
+
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .ilike('username', `%${submittedSearch}%`)
+          .limit(8)
+
+        if (error) {
+          throw error
+        }
+
+        setUserResults(data ?? [])
+      } catch (error) {
+        console.error(error)
+        setSearchErrorMessage('Could not search users.')
+      } finally {
+        setSearchLoading(false)
+      }
+    }
+
+    loadUserResults()
   }, [submittedSearch])
 
   function handleSearchSubmit(event) {
     event.preventDefault()
-    setSubmittedSearch({ mode: searchMode, term: searchTerm.trim() })
-  }
-
-
-  function addTagToSearch(tag) {
-    const hashtag = `#${tag}`
-
-    if (searchMode !== 'tags') {
-      setSearchMode('tags')
-      setSearchTerm(hashtag)
-      return
-    }
-
-    setSearchTerm((currentTerm) => {
-      const terms = currentTerm.trim().split(/\s+/).filter(Boolean)
-
-      if (terms.includes(hashtag)) {
-        return currentTerm
-      }
-
-      return [...terms, hashtag].join(' ')
-    })
+    setSubmittedSearch(searchTerm.trim())
   }
 
   return (
@@ -264,24 +301,14 @@ function HomePage() {
 
             <Col xs={12} md={7} lg={4} className="mx-lg-auto">
               <Form className="d-flex" role="search" onSubmit={handleSearchSubmit}>
-                <InputGroup className="me-2">
-                  <Form.Select
-                    className="search-mode-select"
-                    aria-label="Search category"
-                    value={searchMode}
-                    onChange={(event) => setSearchMode(event.target.value)}
-                  >
-                    <option value="users">Users</option>
-                    <option value="tags">Tags</option>
-                  </Form.Select>
-                  <Form.Control
-                    type="search"
-                    placeholder={searchMode === 'tags' ? 'Find posts by tags...' : 'Search users...'}
-                    aria-label="Search"
-                    value={searchTerm}
-                    onChange={(event) => setSearchTerm(event.target.value)}
-                  />
-                </InputGroup>
+                <Form.Control
+                  className="me-2"
+                  type="search"
+                  placeholder="Search users..."
+                  aria-label="Search users"
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                />
                 <Button variant="outline-dark" type="submit" aria-label="Search">
                   <i className="bi bi-search" />
                 </Button>
@@ -306,6 +333,29 @@ function HomePage() {
         </Container>
       </Navbar>
       
+      {submittedSearch && (
+        <section className="user-search-results">
+          <div className="user-search-results-inner">
+            <h2 className="fs-5 mb-1">User Results</h2>
+            <p className="text-muted small mb-3">Profiles matching "{submittedSearch}"</p>
+              {searchLoading && (
+                <p className="text-muted text-center">Searching users...</p>
+              )}
+              {searchErrorMessage && (
+                <Alert variant="warning">{searchErrorMessage}</Alert>
+              )}
+              {!searchLoading && !searchErrorMessage && userResults.length === 0 && (
+                <p className="text-muted text-center">No users found.</p>
+              )}
+              <div className="user-search-list">
+                {userResults.map((user) => (
+                  <UserSearchCard key={user.id} user={user} />
+                ))}
+              </div>
+          </div>
+        </section>
+      )}
+
       <h1 className="feed-title text-center my-4">Home Feed</h1>
       <p className="text-gray text-center mb-4">
           Discover amazing projects from the community
@@ -313,13 +363,14 @@ function HomePage() {
       
       <main className="feed-content">
         <div className="feed-list">
+
           {loading && <p className="text-muted text-center">Loading posts...</p>}
           {errorMessage && <Alert variant="warning">{errorMessage}</Alert>}
           {!loading && !errorMessage && posts.length === 0 && (
             <p className="text-muted text-center">No public posts found.</p>
           )}
           {posts.map((post) => (
-            <PostCard key={post.id} post={post} onTagClick={addTagToSearch} />
+            <PostCard key={post.id} post={post} />
           ))}
         </div>
       </main>
