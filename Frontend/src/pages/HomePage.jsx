@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Alert,
   Button,
@@ -45,8 +46,32 @@ function formatPostTime(createdAt) {
 }
 
 function PostCard({ post, onTagClick }) {
+  const navigate = useNavigate()
+
+  function openPost() {
+    navigate(`/post/${post.id}`)
+  }
+
+  function handlePostKeyDown(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      openPost()
+    }
+  }
+
+  function handleTagClick(event, tag) {
+    event.stopPropagation()
+    onTagClick(tag)
+  }
+
   return (
-    <Card className="feed-card p-3 p-md-4">
+    <Card
+      className="feed-card p-3 p-md-4"
+      role="button"
+      tabIndex={0}
+      onClick={openPost}
+      onKeyDown={handlePostKeyDown}
+    >
       <div className="d-flex align-items-center mb-3">
         {post.avatarUrl ? (
           <img src={post.avatarUrl} className="profile-avatar me-2" alt="" />
@@ -55,7 +80,11 @@ function PostCard({ post, onTagClick }) {
             {post.username.charAt(0).toUpperCase()}
           </div>
         )}
-        <a href="#" className="text-decoration-none fw-bold text-dark">
+        <a
+          href="#"
+          className="text-decoration-none fw-bold text-dark"
+          onClick={(event) => event.stopPropagation()}
+        >
           {post.username}
         </a>
         <small className="text-muted ms-2">
@@ -76,7 +105,7 @@ function PostCard({ post, onTagClick }) {
       <ul className="post-tag list-unstyled d-flex flex-wrap gap-2 mb-3">
         {post.tags.map((tag) => (
           <li key={tag}>
-            <Badge bg={null} onClick={() => onTagClick(tag)}>
+            <Badge bg={null} onClick={(event) => handleTagClick(event, tag)}>
               #{tag}
             </Badge>
           </li>
@@ -247,7 +276,7 @@ function HomePage() {
                   </Form.Select>
                   <Form.Control
                     type="search"
-                    placeholder={searchMode === 'tags' ? 'Search tags...' : 'Search users...'}
+                    placeholder={searchMode === 'tags' ? 'Find posts by tags...' : 'Search users...'}
                     aria-label="Search"
                     value={searchTerm}
                     onChange={(event) => setSearchTerm(event.target.value)}
