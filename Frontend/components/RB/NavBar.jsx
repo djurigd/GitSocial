@@ -16,10 +16,25 @@ import CreatePostModal from './CreatePostModal.jsx'
 function NavBar({ onSearch, searchTerm, setSearchTerm }) {
   const navigate = useNavigate()
   const [showCreatePost, setShowCreatePost] = useState(false)
+  const [localSearchTerm, setLocalSearchTerm] = useState('')
+
+  const currentSearchTerm = searchTerm ?? localSearchTerm
+  const updateSearchTerm = setSearchTerm ?? setLocalSearchTerm
 
   function handleSearchSubmit(event) {
     event.preventDefault()
-    onSearch(searchTerm.trim())
+    const trimmedSearch = currentSearchTerm.trim()
+
+    if (onSearch) {
+      onSearch(trimmedSearch)
+      return
+    }
+
+    if (trimmedSearch) {
+      navigate(`/?search=${encodeURIComponent(trimmedSearch)}`)
+    } else {
+      navigate('/')
+    }
   }
 
   function handlePostCreated(postId) {
@@ -48,8 +63,8 @@ function NavBar({ onSearch, searchTerm, setSearchTerm }) {
                     type="search"
                     placeholder="Search users..."
                     aria-label="Search users"
-                    value={searchTerm}
-                    onChange={(event) => setSearchTerm(event.target.value)}
+                    value={currentSearchTerm}
+                    onChange={(event) => updateSearchTerm(event.target.value)}
                   />
                 </InputGroup>
                 <Button variant="outline-dark" type="submit" aria-label="Search">
@@ -67,13 +82,13 @@ function NavBar({ onSearch, searchTerm, setSearchTerm }) {
                 <i className="bi bi-pencil-square me-2" />
                 New Post
               </Button>
-              <Button variant="outline-dark" type="button">
+              <Button variant="outline-dark" type="button" onClick={() => navigate('/')}>
                 <i className="bi bi-house-door me-2" />
                 Home
               </Button>
-              <Button variant="outline-dark" type="button">
-                <i className="bi bi-person-circle me-2" />
-                Profile
+              <Button variant="outline-dark" type="button" onClick={() => navigate('/login')}>
+                <i className="bi bi-box-arrow-in-right me-2" />
+                Login
               </Button>
             </Col>
           </Row>

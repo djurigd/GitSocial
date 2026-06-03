@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Alert } from 'react-bootstrap'
 
 import NavBar from '../../components/RB/NavBar.jsx'
@@ -7,8 +8,10 @@ import UserSearchCard from '../../components/RB/UserSearchCard.jsx'
 import { isSupabaseConfigured, supabase } from '../lib/supabase.js'
 
 function HomePage() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [submittedSearch, setSubmittedSearch] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const initialSearch = searchParams.get('search') ?? ''
+  const [searchTerm, setSearchTerm] = useState(initialSearch)
+  const [submittedSearch, setSubmittedSearch] = useState(initialSearch)
   const [userResults, setUserResults] = useState([])
   const [searchLoading, setSearchLoading] = useState(false)
   const [searchErrorMessage, setSearchErrorMessage] = useState('')
@@ -32,6 +35,7 @@ function HomePage() {
           .from('posts')
           .select(`
             id,
+            user_id,
             title,
             description,
             created_at,
@@ -62,6 +66,7 @@ function HomePage() {
 
         const formattedPosts = (data ?? []).map((post) => ({
           id: post.id,
+          userId: post.user_id,
           title: post.title,
           description: post.description,
           createdAt: post.created_at,
@@ -86,6 +91,16 @@ function HomePage() {
 
     loadFeedPosts()
   }, [])
+
+  function handleSearch(searchValue) {
+    setSubmittedSearch(searchValue)
+
+    if (searchValue) {
+      setSearchParams({ search: searchValue })
+    } else {
+      setSearchParams({})
+    }
+  }
 
   useEffect(() => {
     async function loadUserResults() {
@@ -129,7 +144,7 @@ function HomePage() {
   return (
     <div className="home-page">
       <NavBar
-        onSearch={setSubmittedSearch}
+        onSearch={handleSearch}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />

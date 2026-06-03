@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react"
-import { createClient } from "@supabase/supabase-js"
 
 import CommentCard from "./CommentCard"
-
-const supabase = createClient(
-   import.meta.env.VITE_SUPABASE_URL,
-   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
-)
+import { supabase } from "../../src/lib/supabase.js"
 
 function CommentSection({ postId, currentUserId }) {
 

@@ -34,6 +34,13 @@ function inferLanguage(filename) {
 }
 
 async function getCurrentUserId() {
+  // Local dummy posting uses this before auth is fully wired
+  const devUserId = import.meta.env.VITE_DEV_USER_ID
+
+  if (devUserId) {
+    return devUserId
+  }
+
   const { data: authData } = await supabase.auth.getUser()
 
   if (authData?.user?.id) {

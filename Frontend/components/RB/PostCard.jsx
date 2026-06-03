@@ -38,6 +38,14 @@ function PostCard({ post }) {
     navigate(`/post/${post.id}`)
   }
 
+  function openProfile(event) {
+    event.stopPropagation()
+
+    if (post.userId) {
+      navigate(`/profile/${post.userId}`)
+    }
+  }
+
   function handlePostKeyDown(event) {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
@@ -61,13 +69,13 @@ function PostCard({ post }) {
             {post.username.charAt(0).toUpperCase()}
           </div>
         )}
-        <a
-          href="#"
-          className="text-decoration-none fw-bold text-dark"
-          onClick={(event) => event.stopPropagation()}
+        <button
+          className="btn btn-link p-0 text-decoration-none fw-bold text-dark"
+          type="button"
+          onClick={openProfile}
         >
           {post.username}
-        </a>
+        </button>
         <small className="text-muted ms-2">
           {formatPostTime(post.createdAt)}
         </small>

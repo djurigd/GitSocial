@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import { createClient } from "@supabase/supabase-js"
 import { Link } from "react-router-dom"
 
 import FileExplorer from "../../components/Project/FileExplorer"
 import CodeViewer from "../../components/Project/CodeViewer"
 import CommentSection from "../../components/Comments/CommentSection"
-import Header from "../../components/HeaderBar"
-
-const supabase = createClient(
-   import.meta.env.VITE_SUPABASE_URL,
-   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
-)
+// import Header from "../../components/HeaderBar"
+import NavBar from "../../components/RB/NavBar.jsx"
+import { supabase } from "../lib/supabase.js"
 
 function PostPage() {
 
@@ -89,7 +85,9 @@ function PostPage() {
    return (
       <div className="post-page">
 
-         <Header />
+         {/* TODO: Using the shared navbar for now; restore Header if post page needs its own header later. */}
+         {/* <Header /> */}
+         <NavBar />
 
          <div className="project-header">
 
