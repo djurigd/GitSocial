@@ -12,53 +12,80 @@ function CommentSection({ postId, currentUserId }) {
    // -----------------------------
    // FETCH COMMENTS (with users)
    // -----------------------------
-   async function fetchComments() {
-      try {
-         const { data, error } = await supabase
-            .from("comments")
-            .select(`
-               id,
-               content,
-               post_id,
-               user_id,
-               created_at,
-               users (
-                  username
-               )
-            `)
-            .eq("post_id", Number(postId))
-            .order("created_at", { ascending: true })
-
-         if (error) throw error
-
-         setComments(data || [])
-
-      } catch (error) {
-         console.error("Error fetching comments:", error)
-      } finally {
-         setLoading(false)
-      }
-   }
-
    useEffect(() => {
+      let mounted = true
+
+      async function fetchComments() {
+         try {
+            const { data, error } = await supabase
+               .from("comments")
+               .select(`
+                  id,
+                  content,
+                  post_id,
+                  user_id,
+                  created_at,
+                  users (
+                     username
+                  )
+               `)
+               .eq("post_id", Number(postId))
+               .order("created_at", { ascending: true })
+
+            if (error) throw error
+
+            if (mounted) setComments(data || [])
+
+         } catch (error) {
+            console.error("Error fetching comments:", error)
+         } finally {
+            if (mounted) setLoading(false)
+         }
+      }
+
       fetchComments()
+
+      return () => {
+         mounted = false
+      }
    }, [postId])
 
-   // -----------------------------
-   // SUBMIT COMMENT (INSERT FIXED)
-   // -----------------------------
+ 
    async function submitComment() {
 
       if (!content.trim()) return
 
       try {
+         // determine user id (prop or from auth / dev fallback)
+         async function getCurrentUserId() {
+            const devUserId = import.meta.env.VITE_DEV_USER_ID
+            if (devUserId) return devUserId
+
+            const { data: authData } = await supabase.auth.getUser()
+            if (authData?.user?.id) return authData.user.id
+
+            const { data: devUser, error: devErr } = await supabase
+               .from('users')
+               .select('id')
+               .limit(1)
+               .maybeSingle()
+
+            if (devErr || !devUser?.id) {
+               throw new Error('Could not determine current user id')
+            }
+
+            return devUser.id
+         }
+
+         const userId = currentUserId ?? await getCurrentUserId()
+
          const { data, error } = await supabase
             .from("comments")
             .insert([
                {
                   post_id: Number(postId),
                   content: content,
-                  user_id: currentUserId
+                  user_id: userId
                }
             ])
             .select(`

@@ -1,0 +1,41 @@
+nav {
+  display: flex;
+  justify-content: space-evenly;
+  background-color: rgb(37, 37, 37);
+  align-items: center;
+  height: 50px;
+  width: 100%;
+}
+
+nav ul {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  list-style-type: none;
+  gap: 2rem;
+  padding: 0;
+  margin: 0;
+}
+
+.nav_button {
+  display: block;
+  background-color: rgb(37, 37, 37);
+  font-weight: bold;
+  text-align: center;
+  line-height: 50px;
+  height: 50px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(207, 207, 207);
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+nav a {
+  display: block;
+  justify-self: center;
+}

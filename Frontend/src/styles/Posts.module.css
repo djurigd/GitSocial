@@ -1,0 +1,29 @@
+#post_container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 5px;
+}
+
+#post {
+  display: flex;
+  flex-direction: column;
+  border-color: white;
+  border-radius: 5px;
+  border-style: solid;
+  border-width: 1px;
+
+}
+
+#post h3 {
+  margin-top: 3px;
+}
+
+#post h3, #post p, #post span {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+a {
+  text-decoration: none;
+}

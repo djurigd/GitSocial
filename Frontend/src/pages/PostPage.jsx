@@ -95,7 +95,7 @@ function PostPage() {
 
             <p>{post.description}</p>
 
-            <p className="author">
+            <p style={{ color: '#0072b1' }} className="author">
                Posted by{" "}
                <Link
                   to={`/profile/${post.user_id}`}

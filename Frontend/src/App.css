@@ -169,17 +169,24 @@
   cursor: pointer;
   transition: background-color 150ms ease, transform 120ms ease;
   user-select: none;
+  color:black;
 }
 
 .file-explorer .file-item:hover {
-  background-color: rgba(255,255,255,0.03);
+  background-color: lightgrey;
   transform: translateX(4px);
 }
 
 .file-explorer .selected-file {
-  background-color: rgba(255,255,255,0.05);
+  background-color: lightgrey;
+  color: black;
 }
-
+.tag{
+  color: #0072b1;
+}
+.comment-content, .comment-header{
+  color:black;
+}
 .code-viewer {
   flex: 3;
   padding: 16px 20px;
@@ -194,8 +201,8 @@
   text-align: left;
   margin: 0;
   padding: 12px;
-  background: var(--panel-bg, #0f0f0f);
-  color: var(--text, #e6e6e6);
+  background: var(--panel-bg, lightgrey);
+  color: var(--text, black);
   border-radius: 6px;
   overflow: auto;
 }
@@ -211,7 +218,7 @@
 
    padding: 0 20px;
 
-   background-color: #252526;
+   background-color: black;
    border-bottom: 1px solid #333;
 
    position: sticky;
@@ -291,4 +298,26 @@
 
 .profile-icon:hover {
    background-color: #444;
+}
+.post-page{
+  /* Match home page background and fill viewport */
+  min-height: 100vh;
+  background-color: #f9fafb;
+  text-align: center;
+}
+h1,h2,p,h3{
+  color:black;
+}
+a{
+  color: #0072b1;
+}
+
+/* Ensure the author link on post page is visibly blue */
+.post-page .author-link,
+.post-page p.author a.author-link {
+  color: #0072b1;
+  text-decoration: none;
+}
+.post-page .author-link:hover {
+  text-decoration: underline;
 }
