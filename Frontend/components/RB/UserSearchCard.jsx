@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom'
 
 function UserSearchCard({ user }) {
   const navigate = useNavigate()
-  const profileSummary = user.bio || user.github_username || 'GitSocial user'
-  const previewSummary =
-    profileSummary.length > 80 ? `${profileSummary.slice(0, 77)}...` : profileSummary
+  const cleanBio = user.bio?.trim()
+  const previewBio = cleanBio && cleanBio.length > 60
+    ? `${cleanBio.slice(0, 57)}...`
+    : cleanBio
 
   function openProfile() {
     navigate(`/profile/${user.id}`)
@@ -26,7 +27,7 @@ function UserSearchCard({ user }) {
       onClick={openProfile}
       onKeyDown={handleKeyDown}
     >
-      <Card.Body className="d-flex align-items-center p-3">
+      <Card.Body className="d-flex align-items-center">
         {user.avatar_url ? (
           <img src={user.avatar_url} className="profile-avatar me-3" alt="" />
         ) : (
@@ -34,9 +35,22 @@ function UserSearchCard({ user }) {
             {user.username?.charAt(0).toUpperCase() ?? 'U'}
           </div>
         )}
-        <div>
+        <div className="d-flex flex-column gap-1 w-100">
           <div className="fw-bold text-dark">{user.username ?? 'Unknown user'}</div>
-          <div className="user-search-summary text-muted small">{previewSummary}</div>
+          {user.github_username && (
+            <div className="text-muted small d-flex align-items-center lh-sm">
+              <i className="bi bi-github me-1 flex-shrink-0 text-secondary"/>
+              <span>@{user.github_username}</span>
+            </div>
+          )}
+          {previewBio && (
+            <div className="user-search-summary text-secondary small lh-sm text-truncate">
+              <em>{previewBio}</em>
+            </div>
+          )}
+          {!user.github_username && !previewBio && (
+            <div className="text-muted small fst-italic">GitSocial user</div>
+          )}
         </div>
       </Card.Body>
     </Card>
