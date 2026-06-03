@@ -1,6 +1,8 @@
 import { Badge, Card, Stack } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 
+import { normalizeTagName } from './tagUtils.js'
+
 function formatPostTime(createdAt) {
   const postedAt = new Date(createdAt)
   const elapsedMs = Date.now() - postedAt.getTime()
@@ -85,7 +87,7 @@ function PostCard({ post }) {
         {post.tags.map((tag) => (
           <li key={tag}>
             <Badge bg={null}>
-              #{tag}
+              #{normalizeTagName(tag)}
             </Badge>
           </li>
         ))}

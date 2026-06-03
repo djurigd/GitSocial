@@ -157,8 +157,8 @@ function HomePage() {
         </section>
       )}
 
-      <h1 className="feed-title text-center my-4">Home Feed</h1>
-      <p className="text-gray text-center mb-4">
+      <h1 className="feed-title text-center my-2">Home Feed</h1>
+      <p className="text-gray text-center mb-2">
         Discover amazing projects from the community
       </p>
 
