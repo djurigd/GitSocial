@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import {createClient } from '@supabase/supabase-js';
+import styles from '../styles/Login.module.css';
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -46,8 +47,9 @@ export function LogIn() {
     <>
       <div>
         <h1>Log in</h1>
-        <button onClick={githubAuth}>
-        
+        <button id={styles.login_button} onClick={githubAuth}>
+          <img id={styles.github_logo} src='https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/github-white-icon.png' />
+          Login via GitHub
         </button>
       </div>
     </>
