@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import styles from '../styles/ProfileNav.module.css'
 
 export function ProfileNav() {
   const [page, setPage] = useState({});
 
   const pages = [
-    { to: "/:profileId", page: "Posts" },
-    { to: "/:profileId/Projects", page: "Projects" }
+    { to: "/", page: "Posts" },
+    { to: "/projects", page: "Projects" }
   ];
   return(
     <>
@@ -14,10 +15,9 @@ export function ProfileNav() {
         <ul>
           {pages.map((link, id) => (
             <li key={id} 
-                className="nav-button" 
+                className={styles.nav_button} 
                 id={page === id? "current" : ""}>
                     <Link to={link.to} 
-                        className="nav-button" 
                         id={page === id ? "current" : ""} 
                         onClick={() => setPage(id)}>
                           {link.page}

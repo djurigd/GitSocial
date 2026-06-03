@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
-import { Profile } from './components/Profile'
+import { Profile } from './components/Profile';
+import { Posts } from './components/Posts';
+import { Projects } from './components/Projects';
 
 
 function App() {
@@ -7,7 +9,10 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path='/' element={<Profile />} />
+          <Route path='/' element={<Profile />} >
+            <Route index element={<Posts />} />
+            <Route path='projects' element={<Projects />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </>

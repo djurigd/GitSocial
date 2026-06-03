@@ -10,10 +10,19 @@ body {
 
 .profile_container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   border-width: 1px;
   border-style: solid;
   border-color: rgb(207, 207, 207);
+  width: 100vh;
+  height: 300px;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.sub_profile_container {
+  display: flex;
+  flex-direction: row;
   width: 100vh;
   height: 250px;
   justify-content: space-evenly;
@@ -39,4 +48,9 @@ body {
 #display_name {
   font-weight: bold;
   font-size: 50px
+}
+
+#handle_display {
+  font-weight: lighter;
+  font-size: 17px;
 }
