@@ -1,7 +1,8 @@
 import { ProfileNav } from './ProfileNav';
 //import { useProfile } from './ProfileContext';
 
-import styles from '../../src/styles/Profile.module.css';
+// TODO: This style sheet seems to be bleeding over and making the width too compact - Lucas
+//import styles from '../../src/styles/Profile.module.css';
 
 export function ProfileHeader() {
   const profile = {
