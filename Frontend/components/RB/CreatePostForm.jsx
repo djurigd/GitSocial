@@ -9,7 +9,6 @@ import {
 import { isSupabaseConfigured, supabase } from '../../src/lib/supabase.js'
 import { normalizeTagName } from './tagUtils.js'
 
-// Core form limits
 const TITLE_MIN = 3
 const TITLE_MAX = 60
 const DESC_MIN = 10
@@ -34,7 +33,6 @@ function inferLanguage(filename) {
 }
 
 async function getCurrentUserId() {
-  // Local dummy posting uses this before auth is fully wired
   const devUserId = import.meta.env.VITE_DEV_USER_ID
 
   if (devUserId) {
@@ -47,7 +45,6 @@ async function getCurrentUserId() {
     return authData.user.id
   }
 
-  // Dev fallback until login/profile routing is wired up
   const { data: devUser, error } = await supabase
     .from('users')
     .select('id')
@@ -146,41 +143,43 @@ function CreatePostForm({ onCancel, onPostCreated }) {
         .select('id')
         .single()
 
-      if (postError) {
-        throw postError
-      }
+      if (postError) throw postError
 
-      // Store file text so PostPage can display it in the CodeViewer
+      // Upload files to storage and collect metadata for the files table
       const postFiles = await Promise.all(
-        files.map(async (file) => ({
-          post_id: post.id,
-          filename: file.name,
-          language: inferLanguage(file.name),
-          content: await file.text(),
-        })),
+        files.map(async (file) => {
+          const storagePath = `post-${post.id}/${file.name}`
+
+          const { error: uploadError } = await supabase.storage
+            .from('project-files')
+            .upload(storagePath, file, { upsert: true })
+
+          if (uploadError) throw uploadError
+
+          return {
+            post_id: post.id,
+            filename: file.name,
+            language: inferLanguage(file.name),
+            storage_path: storagePath,
+          }
+        })
       )
 
       if (postFiles.length > 0) {
         const { error: filesError } = await supabase.from('files').insert(postFiles)
-
-        if (filesError) {
-          throw filesError
-        }
+        if (filesError) throw filesError
       }
 
       if (tagsArray.length > 0) {
         const tagIds = await Promise.all(tagsArray.map(getOrCreateTagId))
-        // Link selected tags after the post exists
+
         const postTags = tagIds.map((tagId) => ({
           post_id: post.id,
           tag_id: tagId,
         }))
 
         const { error: postTagsError } = await supabase.from('post_tags').insert(postTags)
-
-        if (postTagsError) {
-          throw postTagsError
-        }
+        if (postTagsError) throw postTagsError
       }
 
       onPostCreated(post.id)

@@ -1,26 +1,58 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
+import { createClient } from "@supabase/supabase-js"
 import { Link } from "react-router-dom"
 
 import FileExplorer from "../../components/Project/FileExplorer"
 import CodeViewer from "../../components/Project/CodeViewer"
 import CommentSection from "../../components/Comments/CommentSection"
-// import Header from "../../components/HeaderBar"
 import NavBar from "../../components/RB/NavBar.jsx"
 import { supabase } from "../lib/supabase.js"
 
 function PostPage() {
-
    const { id } = useParams()
 
    const [post, setPost] = useState(null)
    const [files, setFiles] = useState([])
    const [selectedFile, setSelectedFile] = useState(null)
    const [loading, setLoading] = useState(true)
+   const [fileLoading, setFileLoading] = useState(false)
+
+   async function loadFile(file) {
+
+      try {
+
+         setFileLoading(true)
+
+         const { data, error } =
+            await supabase.storage
+               .from("project-files")
+               .download(file.storage_path)
+
+         if (error) throw error
+
+         const content = await data.text()
+
+         setSelectedFile({
+            ...file,
+            content
+         })
+
+      } catch (error) {
+
+         console.error("Error loading file:", error)
+
+      } finally {
+
+         setFileLoading(false)
+
+      }
+   }
 
    useEffect(() => {
 
       async function fetchPost() {
+
          try {
 
             const postId = Number(id)
@@ -28,19 +60,10 @@ function PostPage() {
             const { data: postData, error: postError } =
                await supabase
                   .from("posts")
-                  .select(`
-                     *,
-                     users (
-                        username
-                     ),
-                     post_tags (
-                        tags (
-                           name
-                        )
-                     )
-                  `)
+                  .select(`*,users (username),post_tags (tags (name))`)
                   .eq("id", postId)
                   .single()
+
             if (postError) throw postError
 
             setPost(postData)
@@ -55,8 +78,10 @@ function PostPage() {
 
             setFiles(filesData)
 
-            if (filesData.length > 0) {
-               setSelectedFile(filesData[0])
+            const firstFile = filesData.find(f => f.storage_path)
+
+            if (firstFile) {
+               await loadFile(firstFile)
             }
 
          } catch (error) {
@@ -85,17 +110,14 @@ function PostPage() {
    return (
       <div className="post-page">
 
-         {/* TODO: Using the shared navbar for now; restore Header if post page needs its own header later. */}
-         {/* <Header /> */}
          <NavBar />
 
-         <div className="project-header">
 
             <h1>{post.title}</h1>
 
             <p>{post.description}</p>
 
-            <p style={{ color: '#0072b1' }} className="author">
+            <p className="author">
                Posted by{" "}
                <Link
                   to={`/profile/${post.user_id}`}
@@ -118,7 +140,6 @@ function PostPage() {
                ))}
 
             </div>
-         </div>
 
          <div className="viewer-layout">
 
