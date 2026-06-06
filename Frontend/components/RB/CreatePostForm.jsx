@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {
   Alert,
   Button,
@@ -7,6 +7,7 @@ import {
 } from 'react-bootstrap'
 
 import { isSupabaseConfigured, supabase } from '../../src/lib/supabase.js'
+import { getCurrentAppUserId } from '../../src/lib/authProfile.js'
 import { normalizeTagName } from './tagUtils.js'
 
 const TITLE_MIN = 3
@@ -30,32 +31,6 @@ function inferLanguage(filename) {
   }
 
   return languages[extension] ?? extension?.toUpperCase() ?? 'Text'
-}
-
-async function getCurrentUserId() {
-  const devUserId = import.meta.env.VITE_DEV_USER_ID
-
-  if (devUserId) {
-    return devUserId
-  }
-
-  const { data: authData } = await supabase.auth.getUser()
-
-  if (authData?.user?.id) {
-    return authData.user.id
-  }
-
-  const { data: devUser, error } = await supabase
-    .from('users')
-    .select('id')
-    .limit(1)
-    .maybeSingle()
-
-  if (error || !devUser?.id) {
-    throw new Error('Could not upload the post.')
-  }
-
-  return devUser.id
 }
 
 async function getOrCreateTagId(tagName) {
@@ -94,6 +69,7 @@ function CreatePostForm({ onCancel, onPostCreated }) {
   const [errorMessage, setErrorMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [validated, setValidated] = useState(false)
+  const submittingRef = useRef(false)
 
   const tagsArray = [
     ...new Set(tagsInput.split(',').map(normalizeTagName).filter(Boolean)),
@@ -114,6 +90,10 @@ function CreatePostForm({ onCancel, onPostCreated }) {
     event.preventDefault()
     event.stopPropagation()
 
+    if (submittingRef.current) {
+      return
+    }
+
     const form = event.currentTarget
     if (form.checkValidity() === false) {
       setValidated(true)
@@ -121,16 +101,20 @@ function CreatePostForm({ onCancel, onPostCreated }) {
     }
 
     if (!isSupabaseConfigured) {
-      setErrorMessage('Could not upload the post.')
+      setErrorMessage('Project sharing is unavailable right now.')
       setValidated(true)
       return
     }
 
-    try {
-      setSubmitting(true)
-      setErrorMessage('')
+    submittingRef.current = true
+    setSubmitting(true)
+    setErrorMessage('')
 
-      const userId = await getCurrentUserId()
+    let createdPostId = null
+
+    try {
+      // Posts reference the app profile row so profiles, feeds, and comments agree.
+      const userId = await getCurrentAppUserId()
 
       const { data: post, error: postError } = await supabase
         .from('posts')
@@ -144,8 +128,9 @@ function CreatePostForm({ onCancel, onPostCreated }) {
         .single()
 
       if (postError) throw postError
+      createdPostId = post.id
 
-      // Upload files to storage and collect metadata for the files table
+      // Store file bytes first, then save file metadata for the code viewer.
       const postFiles = await Promise.all(
         files.map(async (file) => {
           const storagePath = `post-${post.id}/${file.name}`
@@ -171,6 +156,7 @@ function CreatePostForm({ onCancel, onPostCreated }) {
       }
 
       if (tagsArray.length > 0) {
+        // Tags are reused across posts to keep search/filter data normalized.
         const tagIds = await Promise.all(tagsArray.map(getOrCreateTagId))
 
         const postTags = tagIds.map((tagId) => ({
@@ -185,8 +171,15 @@ function CreatePostForm({ onCancel, onPostCreated }) {
       onPostCreated(post.id)
     } catch (error) {
       console.error(error)
-      setErrorMessage(error.message || 'Could not upload the post.')
+
+      if (createdPostId) {
+        onPostCreated(createdPostId)
+        return
+      }
+
+      setErrorMessage('We could not share your project. Please try again.')
     } finally {
+      submittingRef.current = false
       setSubmitting(false)
       setValidated(true)
     }
@@ -265,10 +258,14 @@ function CreatePostForm({ onCancel, onPostCreated }) {
       <Form.Group className="mb-3" controlId="formPostFiles">
         <Form.Label className="text-dark">File(s)</Form.Label>
         <Form.Control
+          required
           type="file"
           multiple
           onChange={(event) => setFiles(Array.from(event.target.files ?? []))}
         />
+        <Form.Control.Feedback type="invalid">
+          Please include at least one project file.
+        </Form.Control.Feedback>
         <Form.Text className="text-muted">
           Selected files will be visible in the post's CodeViewer.
         </Form.Text>

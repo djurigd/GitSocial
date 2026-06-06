@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 
 import CommentCard from "./CommentCard"
 import { supabase } from "../../src/lib/supabase.js"
+import { getCurrentAppUserId } from "../../src/lib/authProfile.js"
 
 function CommentSection({ postId, currentUserId }) {
 
@@ -56,28 +57,8 @@ function CommentSection({ postId, currentUserId }) {
       if (!content.trim()) return
 
       try {
-         // determine user id (prop or from auth / dev fallback)
-         async function getCurrentUserId() {
-            const devUserId = import.meta.env.VITE_DEV_USER_ID
-            if (devUserId) return devUserId
-
-            const { data: authData } = await supabase.auth.getUser()
-            if (authData?.user?.id) return authData.user.id
-
-            const { data: devUser, error: devErr } = await supabase
-               .from('users')
-               .select('id')
-               .limit(1)
-               .maybeSingle()
-
-            if (devErr || !devUser?.id) {
-               throw new Error('Could not determine current user id')
-            }
-
-            return devUser.id
-         }
-
-         const userId = currentUserId ?? await getCurrentUserId()
+         // Comments attach to the same GitSocial profile id used by posts.
+         const userId = currentUserId ?? await getCurrentAppUserId()
 
          const { data, error } = await supabase
             .from("comments")
