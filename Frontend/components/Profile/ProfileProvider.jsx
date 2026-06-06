@@ -26,7 +26,9 @@ export function ProfileProvider({ username, children }) {
   useEffect(() => {
     // Finding a fix for the supabase querying
     const { data, error } = supabase.from('users')
-      .select('*');
+      .select('username, github_username')
+      .eq('username', username)
+      .single();
 
     if (error) {
       console.error(error);
