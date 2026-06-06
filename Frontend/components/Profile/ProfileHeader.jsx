@@ -4,7 +4,7 @@ import styles from '../../src/styles/Profile.module.css';
 
 export function ProfileHeader() {
   const profile = useProfile();
-  if (!profile) {
+  if (!profile.login) {
     return(
       <h3>Sorry, this user doesn't exist.</h3>
     )

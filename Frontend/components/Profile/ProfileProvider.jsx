@@ -24,6 +24,14 @@ export function ProfileProvider({ username, children }) {
   
 
   useEffect(() => {
+    // Finding a fix for the supabase querying
+    const { data, error } = supabase.from('users')
+      .select('*');
+
+    if (error) {
+      console.error(error);
+    }
+
     gql(`
       query GetProfile($username: String!) {
         user(login: $username) {
@@ -36,9 +44,10 @@ export function ProfileProvider({ username, children }) {
           avatarUrl
         }
       }
-    `, { username })
+    `, { username: data.github_username })
       .then(({ user }) => {
         setProfile({
+          username: data.username,
           name: user.name,
           login: user.login,
           pronouns: user.pronouns,
@@ -49,13 +58,15 @@ export function ProfileProvider({ username, children }) {
         });
       });
 
-      supabase.from('users')
-        .select('username')
-        .eq('github_username', username)
-        .single()
-        .then(({ data }) => {
-          if (data) setProfile(prev => ({ ...prev, username: data.username }));
-      });
+
+
+      // supabase.from('users')
+      //   .select('username')
+      //   .eq('github_username', username)
+      //   .single()
+      //   .then(({ data }) => {
+      //     if (data) setProfile(prev => ({ ...prev, username: data.username }));
+      // });
   }, [username]);
 
   return(
