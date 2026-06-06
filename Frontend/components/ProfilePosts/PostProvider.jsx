@@ -14,7 +14,8 @@ export function PostProvider({ username, children }) {
     async function getPosts() {
       const { data, error } = await supabase.from('posts')
         .select('*, users!inner(username)')
-        .eq('users.username', username);
+        .eq('users.username', username)
+        .eq('visibility', 'public');
 
       if (error) {
         console.error(error);

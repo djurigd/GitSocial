@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
-import { Profile } from './components/Profile';
-import { Posts } from './components/Posts';
-import { Projects } from './components/Projects';
+import { Profile } from '../components/Profile/Profile';
+import { Posts } from '../components/projects/Posts';
+import { Projects } from '../components/projects/Projects';
 
 
 function App() {

@@ -1,6 +1,6 @@
 import { ProjectContext } from "./ProjectContext";
 import { useState, useEffect } from "react";
-import { useProfile } from "../ProfileContext";
+import { useProfile } from "../Profile/ProfileContext";
 
 export function ProjectProvider({ children }) {
   const { login } = useProfile();

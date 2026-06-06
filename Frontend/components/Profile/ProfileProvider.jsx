@@ -1,6 +1,7 @@
 import { ProfileContext } from "./ProfileContext";
 import { useState, useEffect } from "react";
 import { graphql } from "@octokit/graphql";
+import { supabase } from "../supabaseClient";
 
 const gql = graphql.defaults({
     headers: {
@@ -10,6 +11,7 @@ const gql = graphql.defaults({
 
 export function ProfileProvider({ username, children }) {
   const [profile, setProfile] = useState({
+    username: "",
     name: "",
     login: "",
     pronouns: "",
@@ -29,8 +31,8 @@ export function ProfileProvider({ username, children }) {
           login
           pronouns
           bio
-          followers
-          following
+          followers { totalCount }
+          following { totalCount }
           avatarUrl
         }
       }
@@ -45,6 +47,14 @@ export function ProfileProvider({ username, children }) {
           following: user.following.totalCount,
           avatarUrl: user.avatarUrl
         });
+      });
+
+      supabase.from('users')
+        .select('username')
+        .eq('github_username', username)
+        .single()
+        .then(({ data }) => {
+          if (data) setProfile(prev => ({ ...prev, username: data.username }));
       });
   }, [username]);
 

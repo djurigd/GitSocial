@@ -4,7 +4,7 @@ import { useProfile } from './ProfileContext';
 import styles from '../styles/Profile.module.css';
 
 export function ProfileHeader() {
-  const { avatarUrl, name, login, pronouns, bio, followers, following } = useProfile();
+  const { username, avatarUrl, name, login, pronouns, bio, followers, following } = useProfile();
 
   return(
     <>
@@ -15,6 +15,7 @@ export function ProfileHeader() {
           </div>
           <div className={styles.name_container}>
             <span id={styles.display_name}>{name}</span>
+            <span id={styles.handle_display}>@{username}</span>
             <span id={styles.handle_display}>{login} - {pronouns}</span>
             <span>{bio}</span>
             <span>{followers} followers • {following} following</span>
