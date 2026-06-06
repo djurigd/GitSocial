@@ -22,7 +22,7 @@ To build the project:
 1. Use `schema.sql` to build the database schema in Supabase
 2. Copy `.env.example` to your `.env`
 3. Fill in your values for in `.env`
-  - `VITE_GHP` - a GitHub Personal Access Token (Metadata read only permission)
+  - `VITE_GHP` - a GitHub Personal Access Token (Repository Metadata read only permission)
   - `VITE_SUPABASE_URL` - found in Supabase project settings
   - `VITE_SUPABASE_ANON_KEY` - found in Supabase project settings
 4. Run these following commands:
