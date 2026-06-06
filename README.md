@@ -8,6 +8,11 @@ Streamlining:
 - Leaving comments and feedback
 - Finding new projects from other developers
 
+Project made by:
+- Davin Til
+- Louis Nguyen
+- Lucas WoldeMichael
+
 ## Instructions on How to Build Project
 This project uses:
 - @octokit/graphql & @octokit/rest
@@ -21,11 +26,15 @@ This project uses:
 To build the project:
 1. Use `schema.sql` to build the database schema in Supabase
 2. Copy `.env.example` to your `.env`
-3. Fill in your values for in `.env`
-  - `VITE_GHP` - a GitHub Personal Access Token (Repository Metadata read only permission)
+3. Create an OAuth Application on GitHub (You can either set the homepage URL to localhost or your deployed site)
+4. Create Client Secret and copy it along with Client ID
+5. Enable GitHub Auth Provider and paste in Client ID and Secret
+6. Copy the callback URL from Supabase into GitHub OAuth Application "Authorization callback URL"
+7. Fill in your values for in `.env`
+  - `VITE_GHP` - a GitHub Personal Access Token (create a token with Repository Metadata read only permission)
   - `VITE_SUPABASE_URL` - found in Supabase project settings
   - `VITE_SUPABASE_ANON_KEY` - found in Supabase project settings
-4. Run these following commands:
+8. Run these following commands:
   - `npm install`
   - `npm run dev`
 
