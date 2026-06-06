@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Alert } from 'react-bootstrap'
 
-import NavBar from '../../components/RB/NavBar.jsx'
 import PostCard from '../../components/RB/PostCard.jsx'
 import { isSupabaseConfigured, supabase } from '../lib/supabase.js'
 
@@ -85,7 +84,6 @@ function HomePage() {
 
   return (
     <div className="home-page">
-      <NavBar />
 
       <h1 className="feed-title text-center my-2">Home Feed</h1>
       <p className="text-gray text-center mb-2">

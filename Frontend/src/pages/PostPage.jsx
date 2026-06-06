@@ -5,7 +5,6 @@ import { Link } from "react-router-dom"
 import FileExplorer from "../../components/Project/FileExplorer"
 import CodeViewer from "../../components/Project/CodeViewer"
 import CommentSection from "../../components/Comments/CommentSection"
-import NavBar from "../../components/RB/NavBar.jsx"
 import { supabase } from "../lib/supabase.js"
 
 function PostPage() {
@@ -109,7 +108,7 @@ function PostPage() {
    return (
       <div className="post-page">
 
-         <NavBar />
+         
 
 
             <h1>{post.title}</h1>
@@ -119,7 +118,7 @@ function PostPage() {
             <p className="author">
                Posted by{" "}
                <Link
-                  to={`/profile/${post.user_id}`}
+                  to={`/profile/${post.users?.username}`}
                   className="author-link"
                >
                   {post.users?.username}

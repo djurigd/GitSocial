@@ -43,7 +43,7 @@ function PostCard({ post }) {
     event.stopPropagation()
 
     if (post.userId) {
-      navigate(`/profile/${post.userId}`)
+      navigate(`/profile/${post.username}`)
     }
   }
 

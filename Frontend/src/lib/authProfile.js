@@ -22,8 +22,8 @@ export async function getCurrentUserProfile() {
 
   const { data: profile, error } = await supabase
     .from('users')
-    .select('id, username, github_username, avatar_url, bio')
-    .eq('auth_user_id', user.id)
+    .select('id, username, email, github_username, avatar_url, bio')
+    .eq('email', user.email)
     .maybeSingle()
 
   if (error) {

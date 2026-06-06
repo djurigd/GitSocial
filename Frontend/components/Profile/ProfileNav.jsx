@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import styles from '../../src/styles/ProfileNav.module.css'
 
 export function ProfileNav() {
   const [page, setPage] = useState({});
+  const { username } = useParams();
 
   const pages = [
-    { to: "/", page: "Posts" },
-    { to: "/projects", page: "Projects" }
+    { to: `/profile/${username}`, page: "Posts" },
+    { to: `/profile/${username}/projects`, page: "Projects" }
   ];
   return(
     <>
