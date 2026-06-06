@@ -4,6 +4,12 @@ import { usePost } from './PostContext'
 export function Posts() {
   const { posts } = usePost();
 
+  if (posts.length === 0) {
+    return(
+      <h3>This user has no posts.</h3>
+    );
+  }
+
   // Update with Postpage integration
   return(
     <>

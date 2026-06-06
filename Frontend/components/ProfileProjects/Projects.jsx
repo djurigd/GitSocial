@@ -4,6 +4,12 @@ import { useProject } from './ProjectContext';
 export function Projects() {
   const { repos } = useProject();
 
+  if (repos.length === 0) {
+    return(
+      <h3>This user has no repos.</h3>
+    );
+  }
+
   return(
     <>
       <div id={styles.project_container}>

@@ -1,6 +1,17 @@
 import { ProfileHeader } from "../../components/Profile/ProfileHeader";
 import { useParams, Outlet } from "react-router-dom";
 import { ProfileProvider } from "../ProfileProvider";
+import { useProfile } from "../../components/Profile/ProfileContext";
+
+function CheckProfile() {
+  const { login } = useProfile();
+  
+  if (!login) {
+    return null;
+  }
+
+  return <Outlet />
+}
 
 export function Profile() {
   const { username } = useParams();
@@ -8,7 +19,7 @@ export function Profile() {
   return(
     <ProfileProvider username={username}>
       <ProfileHeader />
-      <Outlet />
+      <CheckProfile />
     </ProfileProvider>
   )
 }
