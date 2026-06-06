@@ -5,10 +5,10 @@ import { useParams, Outlet } from "react-router-dom";
 import { ProfileProvider } from "./ProfileProvider";
 
 export function Profile() {
-  const { username } = 'djurigd';
+  const { username } = useParams();
 
   return(
-    <ProfileProvider username={'djurigd'}>
+    <ProfileProvider username={username}>
       <ProfileHeader />
       <Outlet />
     </ProfileProvider>

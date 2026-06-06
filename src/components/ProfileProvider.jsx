@@ -22,27 +22,27 @@ export function ProfileProvider({ username, children }) {
   
 
   useEffect(() => {
-    gql((`
+    gql(`
       query GetProfile($username: String!) {
         user(login: $username) {
           name
           login
           pronouns
           bio
-          followers { totalCount }
-          following { totalCount }
+          followers
+          following
           avatarUrl
         }
       }
-    `), { username })
+    `, { username })
       .then(({ user }) => {
         setProfile({
           name: user.name,
           login: user.login,
           pronouns: user.pronouns,
           bio: user.bio,
-          followers: user.followers,
-          following: user.following,
+          followers: user.followers.totalCount,
+          following: user.following.totalCount,
           avatarUrl: user.avatarUrl
         });
       });

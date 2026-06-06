@@ -1,4 +1,4 @@
-import styles from '../styles/Projects.module.css'
+import styles from '../../styles/Projects.module.css'
 import { useProject } from './ProjectContext';
 
 export function Projects() {

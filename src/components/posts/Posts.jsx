@@ -1,4 +1,4 @@
-import styles from '../styles/Posts.module.css'
+import styles from '../../styles/Posts.module.css'
 import { usePost } from './PostContext'
 
 export function Posts() {
