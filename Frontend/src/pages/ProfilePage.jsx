@@ -1,14 +1,12 @@
 import { ProfileHeader } from "../../components/Profile/ProfileHeader";
-
 import { useParams, Outlet } from "react-router-dom";
+import { ProfileProvider } from "../ProfileProvider";
 
-import { ProfileProvider } from "../../components/Profile/ProfileProvider";
-
-export default function Profile() {
-  const { username } = 'djurigd';
+export function Profile() {
+  const { username } = useParams();
 
   return(
-    <ProfileProvider username={'djurigd'}>
+    <ProfileProvider username={username}>
       <ProfileHeader />
       <Outlet />
     </ProfileProvider>
