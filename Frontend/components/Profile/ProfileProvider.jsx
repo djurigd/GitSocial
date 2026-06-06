@@ -3,13 +3,16 @@ import { useState, useEffect } from "react";
 import { graphql } from "@octokit/graphql";
 import { supabase } from "../supabaseClient";
 
+// Setup for GraphQL
 const gql = graphql.defaults({
     headers: {
       authorization: `token ${import.meta.env.VITE_GHP}`,
     },
   });
 
+// Context provider for profile
 export function ProfileProvider({ username, children }) {
+  // Profile elements
   const [profile, setProfile] = useState({
     username: "",
     name: "",
@@ -21,9 +24,9 @@ export function ProfileProvider({ username, children }) {
     avatarUrl: ""
   });
 
-  
-
+  // Querying from GitHub's GraphQL API and Supabase
   useEffect(() => {
+    // Get the user's GitHub info for the context
     gql(`
       query GetProfile($username: String!) {
         user(login: $username) {
@@ -49,6 +52,7 @@ export function ProfileProvider({ username, children }) {
         });
       });
 
+      // Get the platform username
       supabase.from('users')
         .select('username')
         .eq('github_username', username)

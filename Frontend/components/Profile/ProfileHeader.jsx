@@ -4,12 +4,15 @@ import styles from '../styles/Profile.module.css';
 
 export function ProfileHeader() {
   const profile = useProfile();
-  if (!profile) {
+
+  // If the profile doesn't exist
+  if (!profile.login) {
     return(
       <h3>Sorry, this user doesn't exist.</h3>
     )
   }
 
+  // Display user profile header
   return(
     <>
       <div className={styles.profile_container}>

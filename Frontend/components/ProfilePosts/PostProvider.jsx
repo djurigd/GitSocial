@@ -7,11 +7,14 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_ANON_KEY
 )
 
+// Provider for user posts
 export function PostProvider({ username, children }) {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]); // Amount of post user has
 
+  // Get the user's post
   useEffect(() => {
     async function getPosts() {
+      // Query user's posts
       const { data, error } = await supabase.from('posts')
         .select('*, users!inner(username)')
         .eq('users.username', username)

@@ -1,15 +1,18 @@
 import styles from '../../styles/Projects.module.css'
 import { useProject } from './ProjectContext';
 
+// User list of projects
 export function Projects() {
   const { repos } = useProject();
 
+  // If there are no repos
   if (repos.length === 0) {
     return(
       <h3>This user has no repos.</h3>
     );
   }
 
+  // Display user projects
   return(
     <>
       <div id={styles.project_container}>

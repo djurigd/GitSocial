@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom';
 import styles from '../../src/styles/ProfileNav.module.css'
 
 export function ProfileNav() {
-  const [page, setPage] = useState({});
+  const [page, setPage] = useState({}); // Current pages
 
+  // Profile pages
   const pages = [
     { to: "/", page: "Posts" },
     { to: "/projects", page: "Projects" }
   ];
+
+  // Display navigation bar
   return(
     <>
       <nav>
