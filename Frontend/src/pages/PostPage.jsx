@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import { createClient } from "@supabase/supabase-js"
 import { Link } from "react-router-dom"
 
 import FileExplorer from "../../components/Project/FileExplorer"

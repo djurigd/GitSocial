@@ -1,6 +1,7 @@
 import { Badge, Card, Stack } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 
+import defaultAvatar from '../../src/Pixel_Default_Profile_Avatar.png'
 import { normalizeTagName } from './tagUtils.js'
 
 function formatPostTime(createdAt) {
@@ -62,13 +63,14 @@ function PostCard({ post }) {
       onKeyDown={handlePostKeyDown}
     >
       <div className="d-flex align-items-center mb-3">
-        {post.avatarUrl ? (
-          <img src={post.avatarUrl} className="profile-avatar me-2" alt="" />
-        ) : (
-          <div className="profile-avatar me-2" aria-hidden="true">
-            {post.username.charAt(0).toUpperCase()}
-          </div>
-        )}
+        <img
+          src={post.avatarUrl?.trim() || defaultAvatar}
+          className="profile-avatar me-2"
+          alt=""
+          onError={(event) => {
+            event.currentTarget.src = defaultAvatar
+          }}
+        />
         <button
           className="btn btn-link p-0 text-decoration-none fw-bold text-dark"
           type="button"

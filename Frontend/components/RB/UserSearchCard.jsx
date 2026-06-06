@@ -1,6 +1,8 @@
 import { Card } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 
+import defaultAvatar from '../../src/Pixel_Default_Profile_Avatar.png'
+
 function UserSearchCard({ user }) {
   const navigate = useNavigate()
   const cleanBio = user.bio?.trim()
@@ -27,14 +29,15 @@ function UserSearchCard({ user }) {
       onClick={openProfile}
       onKeyDown={handleKeyDown}
     >
-      <Card.Body className="d-flex align-items-center">
-        {user.avatar_url ? (
-          <img src={user.avatar_url} className="profile-avatar me-3" alt="" />
-        ) : (
-          <div className="profile-avatar me-3" aria-hidden="true">
-            {user.username?.charAt(0).toUpperCase() ?? 'U'}
-          </div>
-        )}
+      <Card.Body className="d-flex align-items-center text-start">
+        <img
+          src={user.avatar_url?.trim() || defaultAvatar}
+          className="profile-avatar me-3"
+          alt=""
+          onError={(event) => {
+            event.currentTarget.src = defaultAvatar
+          }}
+        />
         <div className="d-flex flex-column gap-1 w-100">
           <div className="fw-bold text-dark">{user.username ?? 'Unknown user'}</div>
           {user.github_username && (

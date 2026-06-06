@@ -1,17 +1,20 @@
 /* homepage/search/upload styles */
 
-.home-page {
+:root {
   --gitsocial-blue: #0072b1;
   --gitsocial-page-bg: #f9fafb;
   --gitsocial-soft-bg: #f1f3f5;
   --gitsocial-pill-bg: #e9ecef;
+}
 
+.home-page {
   min-height: 100vh;
   background-color: var(--gitsocial-page-bg);
 }
 
 .feed-navbar {
   min-height: 72px;
+  z-index: 10;
 }
 
 .navbar-brand {
@@ -24,6 +27,25 @@
   height: 40px;
   margin-right: 10px;
   border-radius: 12px;
+}
+
+.nav-search-form {
+  position: relative;
+}
+
+.nav-search-results {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 50%;
+  width: min(42rem, calc(100vw - 2rem));
+  max-height: 70vh;
+  padding: 1rem;
+  overflow-y: auto;
+  border: 1px solid rgba(0, 114, 177, 0.2);
+  border-radius: 1.25rem;
+  background-color: var(--bs-white);
+  transform: translateX(-50%);
+  z-index: 20;
 }
 
 .post-project-button {
@@ -101,10 +123,41 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  border: 1px solid var(--bs-border-color);
   color: #fff;
   font-weight: 600;
   background-color: var(--gitsocial-blue);
   object-fit: cover;
+}
+
+.account-nav-button {
+  display: inline-flex;
+  align-items: center;
+  min-width: 7.5rem;
+  justify-content: center;
+}
+
+.account-nav-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--bs-border-color);
+  background-color: var(--gitsocial-soft-bg);
+  object-fit: cover;
+}
+
+.account-nav-username {
+  display: none;
+}
+
+.account-nav-button:hover .account-nav-label,
+.account-nav-button:focus .account-nav-label {
+  display: none;
+}
+
+.account-nav-button:hover .account-nav-username,
+.account-nav-button:focus .account-nav-username {
+  display: inline;
 }
 
 .file-preview {
@@ -141,6 +194,60 @@
   max-height: 200px;
   overflow-y: auto;
   resize: none;
+}
+
+/* auth page styles */
+
+.auth-page {
+  min-height: 100vh;
+  background-color: var(--gitsocial-page-bg);
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 1.5rem;
+  color: var(--bs-dark);
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.auth-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+}
+
+.auth-card {
+  max-width: 400px;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--bs-border-color);
+}
+
+.account-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px solid var(--bs-border-color);
+  background-color: var(--gitsocial-soft-bg);
+  object-fit: cover;
+}
+
+.text-decoration-none.small {
+  color: var(--gitsocial-blue);
 }
 
 /* post page/header styles */
