@@ -11,7 +11,7 @@ export function ProfileNav() {
   ];
   return(
     <>
-      <nav>
+      <nav className={styles.profile_nav}>
         <ul>
           {pages.map((link, id) => (
             <li key={id} 

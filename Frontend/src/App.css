@@ -412,10 +412,13 @@
   background-color: #f9fafb;
   text-align: center;
 }
-h1,h2,p,h3{
+.post-page h1,
+.post-page h2,
+.post-page p,
+.post-page h3 {
   color:black;
 }
-a{
+.post-page a {
   color: #0072b1;
 }
 
