@@ -24,31 +24,33 @@ export function ProfileProvider({ username, children }) {
   
 
   useEffect(() => {
-    // Finding a fix for the supabase querying
-    const { data, error } = supabase.from('users')
-      .select('username, github_username')
-      .eq('username', username)
-      .single();
+    async function getProfile() {
+      // Finding a fix for the supabase querying
+      const { data, error } = await supabase.from('users')
+        .select('username, github_username')
+        .eq('username', username)
+        .single();
 
-    if (error) {
-      console.error(error);
-    }
-
-    gql(`
-      query GetProfile($username: String!) {
-        user(login: $username) {
-          name
-          login
-          pronouns
-          bio
-          followers { totalCount }
-          following { totalCount }
-          avatarUrl
-        }
+      if (error || !data) {
+        console.error(error);
+        return;
       }
-    `, { username: data.github_username })
-      .then(({ user }) => {
-        setProfile({
+
+      const { user } = await gql(`
+        query GetProfile($username: String!) {
+          user(login: $username) {
+            name
+            login
+            pronouns
+            bio
+            followers { totalCount }
+            following { totalCount }
+            avatarUrl
+          }
+        }
+      `, { username: data.github_username });
+
+      setProfile({
           username: data.username,
           name: user.name,
           login: user.login,
@@ -58,9 +60,9 @@ export function ProfileProvider({ username, children }) {
           following: user.following.totalCount,
           avatarUrl: user.avatarUrl
         });
-      });
-
-
+    }
+    
+    getProfile();
 
       // supabase.from('users')
       //   .select('username')
