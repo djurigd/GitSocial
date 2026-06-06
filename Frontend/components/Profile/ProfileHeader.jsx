@@ -1,18 +1,13 @@
 import { ProfileNav } from './ProfileNav';
-//import { useProfile } from './ProfileContext';
-
-// TODO: This style sheet seems to be bleeding over and making the width too compact - Lucas
-//import styles from '../../src/styles/Profile.module.css';
+import { useProfile } from './ProfileContext';
+import styles from '../../src/styles/Profile.module.css';
 
 export function ProfileHeader() {
-  const profile = {
-    avatarUrl: 'https://avatars.githubusercontent.com/u/182570390?v=4',
-    name: 'Davin Til',
-    login: 'djurigd',
-    pronouns: 'he/him',
-    bio: 'Just testing rn',
-    followers: 0,
-    following: 0
+  const profile = useProfile();
+  if (!profile) {
+    return(
+      <h3>Sorry, this user doesn't exist.</h3>
+    )
   }
 
   return(
@@ -24,6 +19,7 @@ export function ProfileHeader() {
           </div>
           <div className={styles.name_container}>
             <span id={styles.display_name}>{profile.name}</span>
+            <span id={styles.handle_display}>@{profile.username}</span>
             <span id={styles.handle_display}>{profile.login} - {profile.pronouns}</span>
             <span>{profile.bio}</span>
             <span>{profile.followers} followers • {profile.following} following</span>

@@ -41,7 +41,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/profile/:userId" element={<ProfilePage />} />
+        <Route path="/profile/:username" element={<ProfilePage />} />
         {/* Keeps direct upload reachable while the navbar modal is the main entry */}
         <Route path="/post/new" element={<UploadPage />} />
         <Route path="/post/:id" element={<PostPage />} />
