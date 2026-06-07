@@ -13,6 +13,8 @@ Project made by:
 - Louis Nguyen
 - Lucas WoldeMichael
 
+Project URL: https://gitsocialcss481.netlify.app/
+
 ## Instructions on How to Build Project
 This project uses:
 - @octokit/graphql & @octokit/rest
@@ -63,3 +65,6 @@ see their account avatar when available; otherwise the app shows
 Public-facing error messages are intentionally short and user-friendly. Detailed
 Supabase errors stay in the developer console so debugging information is
 available without exposing raw service messages in the UI.
+
+## NOTE
+The email sign up / log in is unavailable right now. Though we are taking a look on fixing the issue.
